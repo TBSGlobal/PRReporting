@@ -44,8 +44,8 @@ SUPABASE_HEADERS = {
     "Prefer": "return=minimal",
 }
 
-GEMINI_MODEL    = "gemini-2.5-flash-lite"
-GEMINI_FALLBACK = "gemini-2.5-flash"
+GEMINI_MODEL    = "gemini-3.5-flash-lite"
+GEMINI_FALLBACK = "gemini-3.6-flash"
 GEMINI_BASE     = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 RETRYABLE_CODES = {429, 500, 503}
 
@@ -632,9 +632,16 @@ def run_server():
     server.serve_forever()
 
 
-if __name__ == "__main__":
+def run_loop():
+    """Background thread: fetch immediately, then every hour."""
     run_fetch()
-    Thread(target=run_server, daemon=False).start()
     while True:
         time.sleep(3600)
         run_fetch()
+
+
+if __name__ == "__main__":
+    # Start HTTP server FIRST so Render's health check passes immediately.
+    # Feed fetching (including Gemini sentiment calls) runs in the background.
+    Thread(target=run_loop, daemon=True).start()
+    run_server()  # blocks forever — keeps the process alive
