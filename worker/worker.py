@@ -567,10 +567,11 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(f"Done. {count} new items.".encode())
         elif self.path == "/backfill":
-            count = run_sentiment_backfill()
+            # Run in background so the HTTP connection doesn't time out
+            Thread(target=run_sentiment_backfill, daemon=True).start()
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(f"Backfill done. {count} items processed.".encode())
+            self.wfile.write(b"Backfill started in background. Check Render logs for progress.")
         else:
             self.send_response(404)
             self.end_headers()
