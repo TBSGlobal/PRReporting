@@ -44,7 +44,7 @@ SUPABASE_HEADERS = {
     "Prefer": "return=minimal",
 }
 
-GEMINI_MODEL    = "gemini-flash-latest"
+GEMINI_MODEL    = "gemini-3.5-flash"
 GEMINI_FALLBACK = "gemini-3.6-flash"
 GEMINI_BASE     = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 RETRYABLE_CODES = {429, 500, 503}
